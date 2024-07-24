@@ -96,6 +96,8 @@ export const userLogin = async (
       expires,
       httpOnly: true,
       signed: true,
+      secure: true, // Set secure to true if using HTTPS
+      sameSite: 'none', // Adjust sameSite attribute as neede
     });
 
     return res

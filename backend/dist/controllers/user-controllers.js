@@ -77,6 +77,8 @@ export const userLogin = async (req, res, next) => {
             expires,
             httpOnly: true,
             signed: true,
+            secure: true, // Set secure to true if using HTTPS
+            sameSite: 'none', // Adjust sameSite attribute as neede
         });
         return res
             .status(200)
