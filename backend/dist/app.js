@@ -7,7 +7,7 @@ import cors from "cors";
 config();
 const app = express();
 //middlewares
-app.use(cors({ origin: "*", credentials: true }));
+app.use(cors({ origin: "https://mern-gpt-1-f0iv.onrender.com", credentials: true }));
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 //remove it in production
