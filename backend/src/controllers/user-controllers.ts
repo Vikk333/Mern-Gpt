@@ -88,8 +88,10 @@ export const userLogin = async (
     });
 
     const token = createToken(user._id.toString(), user.email, "7d");
+    console.log(token);
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
+    
     res.cookie(COOKIE_NAME, token, {
       path: "/",
       domain: "mern-gpt-1-f0iv.onrender.com",
@@ -99,7 +101,7 @@ export const userLogin = async (
       secure: true, // Set secure to true if using HTTPS
       sameSite: 'none', // Adjust sameSite attribute as neede
     });
-
+    console.log('Cookies set:', res.cookie);
     return res
       .status(200)
       .json({ message: "OK", name: user.name, email: user.email });
