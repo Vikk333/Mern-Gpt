@@ -1,8 +1,6 @@
+import axios from 'axios';
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
-// import { configureOpenAI } from "../config/openai-config.js";
-// import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
-import axios from 'axios';
 
 export const generateChatCompletion = async (req, res, next) => {
   const { message } = req.body;
@@ -20,24 +18,37 @@ export const generateChatCompletion = async (req, res, next) => {
     console.log("Message is ", message);
 
     chats.push({ content: message, role: "user" });
-    // Define the request URL and headers
-    const url = 'https://open-ai21.p.rapidapi.com/conversationpalm2';
-    const headers = {
-      'x-rapidapi-key': '085d6605b1msh6cd7ba927a59395p152da1jsn61f7e9041394',
-      'x-rapidapi-host': 'open-ai21.p.rapidapi.com',
-      'Content-Type': 'application/json'
+
+    // Define the request options
+    const options = {
+      method: 'POST',
+      url: 'https://chatgpt-42.p.rapidapi.com/conversationgpt4-2',
+      headers: {
+        'x-rapidapi-key': '085d6605b1msh6cd7ba927a59395p152da1jsn61f7e9041394',
+        'x-rapidapi-host': 'chatgpt-42.p.rapidapi.com',
+        'Content-Type': 'application/json'
+      },
+      data: {
+        messages: chats,
+        system_prompt: '',
+        temperature: 0.9,
+        top_k: 5,
+        top_p: 0.9,
+        max_tokens: 256,
+        web_access: false
+      }
     };
 
-    // Send request to the API using axios.post
-    const response = await axios.post(url, { messages: chats }, { headers });
+    // Send request to the API using axios
+    const response = await axios.request(options);
     console.log('API Response:', response.data);
 
     // Check if the response has the expected BOT property
     const userMessage = { content: message, role: "user" };
     user.chats.push(userMessage);
     if (response.data && response.data.BOT) {
-      const newMessage = {  content: response.data.BOT, role: "assistant" };
-      console.log(newMessage)
+      const newMessage = { content: response.data.BOT, role: "assistant" };
+      console.log(newMessage);
       user.chats.push(newMessage);
       await user.save();
       return res.status(200).json({ chats: user.chats });
@@ -51,16 +62,9 @@ export const generateChatCompletion = async (req, res, next) => {
   }
 };
 
-
-
-
-export const sendChatsToUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const sendChatsToUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    //user token check
+    // User token check
     const user = await User.findById(res.locals.jwtData.id);
     if (!user) {
       return res.status(401).send("User not registered OR Token malfunctioned");
@@ -69,10 +73,10 @@ export const sendChatsToUser = async (
       return res.status(401).send("Permissions didn't match");
     }
      
-       return res.status(200).json({ message: "OK", chats: user.chats });
+    return res.status(200).json({ message: "OK", chats: user.chats });
   } catch (error) {
     console.log(error);
-    return res.status(200).json({ message: "ERROR", cause: error.message });
+    return res.status(500).json({ message: "ERROR", cause: error.message });
   }
 };
 
