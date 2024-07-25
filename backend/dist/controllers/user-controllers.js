@@ -24,21 +24,16 @@ export const userSignup = async (req, res, next) => {
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
         // create token and store cookie
-        res.clearCookie(COOKIE_NAME, {
-            httpOnly: true,
-            domain: "mern-gpt-1-f0iv.onrender.com",
-            signed: true,
-            path: "/",
-        });
+        res.clearCookie(COOKIE_NAME);
         const token = createToken(user._id.toString(), user.email, "7d");
         const expires = new Date();
         expires.setDate(expires.getDate() + 7);
         res.cookie(COOKIE_NAME, token, {
-            path: "/",
-            domain: "mern-gpt-1-f0iv.onrender.com",
             expires,
             httpOnly: true,
             signed: true,
+            secure: true,
+            sameSite: 'none',
         });
         return res
             .status(201)
@@ -62,12 +57,7 @@ export const userLogin = async (req, res, next) => {
             return res.status(403).send("Incorrect Password");
         }
         // create token and store cookie
-        res.clearCookie(COOKIE_NAME, {
-            httpOnly: true,
-            domain: "mern-gpt-1-f0iv.onrender.com",
-            signed: true,
-            path: "/",
-        });
+        res.clearCookie(COOKIE_NAME);
         const token = createToken(user._id.toString(), user.email, "7d");
         console.log(token);
         const expires = new Date();
@@ -76,8 +66,8 @@ export const userLogin = async (req, res, next) => {
             expires,
             httpOnly: true,
             signed: true,
-            secure: true, // Set secure to true if using HTTPS
-            sameSite: 'none', // Adjust sameSite attribute as neede
+            secure: true,
+            sameSite: 'none',
         });
         console.log('Cookies set:', res.cookie);
         return res
@@ -118,12 +108,7 @@ export const userLogout = async (req, res, next) => {
         if (user._id.toString() !== res.locals.jwtData.id) {
             return res.status(401).send("Permissions didn't match");
         }
-        res.clearCookie(COOKIE_NAME, {
-            httpOnly: true,
-            domain: "mern-gpt-1-f0iv.onrender.com",
-            signed: true,
-            path: "/",
-        });
+        res.clearCookie(COOKIE_NAME);
         return res
             .status(200)
             .json({ message: "OK", name: user.name, email: user.email });

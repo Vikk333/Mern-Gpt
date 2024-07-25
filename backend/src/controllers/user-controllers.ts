@@ -34,22 +34,17 @@ export const userSignup = async (
     await user.save();
 
     // create token and store cookie
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-      domain: "mern-gpt-1-f0iv.onrender.com",
-      signed: true,
-      path: "/",
-    });
+    res.clearCookie(COOKIE_NAME);
 
     const token = createToken(user._id.toString(), user.email, "7d");
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
     res.cookie(COOKIE_NAME, token, {
-      path: "/",
-      domain: "mern-gpt-1-f0iv.onrender.com",
       expires,
       httpOnly: true,
       signed: true,
+      secure: true, 
+      sameSite: 'none',
     });
 
     return res
@@ -80,12 +75,7 @@ export const userLogin = async (
 
     // create token and store cookie
 
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-      domain: "mern-gpt-1-f0iv.onrender.com",
-      signed: true,
-      path: "/",
-    });
+    res.clearCookie(COOKIE_NAME);
 
     const token = createToken(user._id.toString(), user.email, "7d");
     console.log(token);
@@ -96,8 +86,8 @@ export const userLogin = async (
       expires,
       httpOnly: true,
       signed: true,
-      secure: true, // Set secure to true if using HTTPS
-      sameSite: 'none', // Adjust sameSite attribute as neede
+      secure: true, 
+      sameSite: 'none',
     });
     console.log('Cookies set:', res.cookie);
     return res
@@ -147,12 +137,7 @@ export const userLogout = async (
       return res.status(401).send("Permissions didn't match");
     }
 
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-      domain: "mern-gpt-1-f0iv.onrender.com",
-      signed: true,
-      path: "/",
-    });
+    res.clearCookie(COOKIE_NAME);
 
     return res
       .status(200)
