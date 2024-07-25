@@ -14,6 +14,7 @@ export const generateChatCompletion = async (req, res, next) => {
             role,
             content,
         }));
+        console.log("Message is ", message);
         chats.push({ content: message, role: "user" });
         // Define the request URL and headers
         const url = 'https://open-ai21.p.rapidapi.com/conversationpalm2';
