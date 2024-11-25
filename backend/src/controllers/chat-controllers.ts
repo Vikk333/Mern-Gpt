@@ -46,8 +46,8 @@ export const generateChatCompletion = async (req, res, next) => {
     // Check if the response has the expected BOT property
     const userMessage = { content: message, role: "user" };
     user.chats.push(userMessage);
-    if (response.data && response.data.BOT) {
-      const newMessage = { content: response.data.BOT, role: "assistant" };
+    if (response.data) {
+      const newMessage = { content: response.data.result, role: "assistant" };
       console.log(newMessage);
       user.chats.push(newMessage);
       await user.save();
